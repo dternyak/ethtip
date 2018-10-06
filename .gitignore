@@ -4,3 +4,9 @@ dist
 coverage
 .rpt2_cache
 docs
+build
+.idea/*
+.next
+out
+src/build
+yarn-error.log
