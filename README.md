@@ -35,23 +35,28 @@ The smart contract is responsible for:
 
 ```solidity
 interface EthTip {
+pragma solidity ^0.4.24;
+
+interface EthTipInterface {
     /// @param to deposit ether to contract, format is keccak256(twitterUser).slice(0,20)
-    function deposit(address to) public payable;
+    function deposit(address to) external payable;
 
     /// @desc CL Callback, transfer ether out of the contract
     /// @param from msg.sender or keccak256(twitterUser).slice(0,20)
     /// @param to ethereum address to withdraw to
     /// @param amount amount to send
-    function fufillTransferExternal(bytes32 _requestId, address from, address to, uint amount) public;
+    function fufillTransferExternal(bytes32 _requestId, address from, address to, uint amount) external;
 
     /// @desc CL Callback, transfer ether within the contract from twitter user to twitter user
     /// @param from keccak256(twitterUser).slice(0,20)
     /// @param to keccak256(twitterUser).slice(0,20)
     /// @param amount amount to send
-    functoin fufillTransferInternal(bytes32 _requestId, address from, address to, uint amount);
+    function fufillTransferInternal(bytes32 _requestId, address from, address to, uint amount) external;
 
     /// @desc return the total supply of the contract
-    function totalSupply() public view returns (uint);
+    function totalSupply() external view returns (uint);
+
+}
 
 }
 ```
