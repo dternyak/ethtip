@@ -1,0 +1,8 @@
+{
+  "name": "ethtip",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:dternyak/ethtip.git",
+  "author": "henrynguyen5 <ngu.henry@hotmail.com>",
+  "license": "MIT"
+}

@@ -1,0 +1,78 @@
+{
+  "name": "ts-package-boilerplate",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/ts-package-boilerplate.umd.js",
+  "module": "dist/ts-package-boilerplate.es6.js",
+  "typings": "src/index",
+  "scripts": {
+    "test": "jest",
+    "test:mem": "npm test -- --coverage --silent --logHeapUsage",
+    "test:watch": "jest --watch",
+    "test:prod": "npm run test -- --coverage --no-cache",
+    "test:prepublish": "npm run lint && npm run test -- --silent --no-cache",
+    "tsc": "tsc --noEmit -p ./tsconfig.json",
+    "format":
+      "find ./src/ -name '*.ts*' | xargs prettier --write --config ./.prettierrc --config-precedence file-override",
+    "remotedev": "remotedev --hostname=localhost --port=8000",
+    "lint": "tslint --project .",
+    "lint:fix": "tslint --project . --fix",
+    "prebuild": "rimraf dist",
+    "build":
+      "tsc -p ./tsconfig-build.json --module commonjs && rollup -c rollup.config.ts",
+    "prepublishOnly":
+      "rimraf node_modules && npm i && npm run tsc && npm run test:prepublish && npm run build",
+    "precommit": "lint-staged",
+    "report-coverage": " cat ./coverage/lcov.info | coveralls",
+    "prepush": "npm run lint && npm run tsc"
+  },
+  "lint-staged": {
+    "{src,__test__}/**/*.ts": ["npm run format", "npm run lint:fix", "git add"]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MyCryptoHQ/ts-package-boilerplate.git"
+  },
+  "author": "MyCrypto <henry@mycrypto.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MyCryptoHQ/ts-package-boilerplate/issues"
+  },
+  "files": ["dist"],
+  "homepage": "https://github.com/MyCryptoHQ/ts-package-boilerplate#readme",
+  "dependencies": {
+    "koa": "^2.5.3",
+    "koa-bodyparser": "^4.2.1",
+    "koa-router": "^7.4.0",
+    "pg": "^7.5.0",
+    "reflect-metadata": "^0.1.12",
+    "twit": "^2.2.11",
+    "typeorm": "^0.2.7"
+  },
+  "devDependencies": {
+    "@types/jest": "^22.2.0",
+    "@types/koa": "^2.0.46",
+    "@types/koa-bodyparser": "^5.0.1",
+    "@types/koa-router": "^7.0.32",
+    "@types/node": "^10.11.4",
+    "@types/twit": "^2.2.19",
+    "coveralls": "^3.0.1",
+    "husky": "^0.14.3",
+    "jest": "^23.6.0",
+    "lint-staged": "^7.0.0",
+    "prettier": "^1.10.2",
+    "rollup": "^0.57.1",
+    "ts-jest": "^23.10.4",
+    "tslint": "^5.9.1",
+    "tslint-config-prettier": "^1.8.0",
+    "typescript": "^3.1.1"
+  },
+  "jest": {
+    "moduleFileExtensions": ["js", "jsx", "json", "ts", "tsx"],
+    "transform": {
+      "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "((\\.|/)(spec))\\.ts$",
+    "coveragePathIgnorePatterns": ["/node_modules/", "__test__"]
+  }
+}
