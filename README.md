@@ -34,7 +34,6 @@ The smart contract is responsible for:
 - providing deposit ability from an address
 
 ```solidity
-interface EthTip {
 pragma solidity ^0.4.24;
 
 interface EthTipInterface {
@@ -55,8 +54,6 @@ interface EthTipInterface {
 
     /// @desc return the total supply of the contract
     function totalSupply() external view returns (uint);
-
-}
 
 }
 ```
