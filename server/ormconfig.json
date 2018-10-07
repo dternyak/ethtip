@@ -1,9 +1,7 @@
 {
-  "type": "mysql",
-  "host": "localhost",
-  "port": 3306,
-  "username": "test",
-  "password": "test",
+  "type": "postgres",
+  "url":
+    "postgres://mymdfskh:CBwAnh3qH5SpRGXOdqQ6dqvz4K7oW_32@horton.elephantsql.com:5432/mymdfskh",
   "database": "test",
   "synchronize": true,
   "logging": false,
