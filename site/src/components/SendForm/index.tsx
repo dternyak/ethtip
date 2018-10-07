@@ -21,7 +21,7 @@ interface State {
 import { Form } from 'antd';
 
 function isNumeric(num) {
-  return !isNaN(num);
+  return !isNaN(num) && num !== '';
 }
 
 const FormItem = Form.Item;
@@ -76,6 +76,10 @@ export default class SendForm extends React.PureComponent<any, State> {
   amountValidation = (amount: string) => {
     let badAmountValidation = null;
     let weiAmount = null;
+
+    if (amount === '') {
+
+    }
 
     if (!isNumeric(amount)) {
       badAmountValidation = 'Amount is not a number';
