@@ -1,13 +1,13 @@
 import React from 'react';
 import { Spin, Icon, Button, Input } from 'antd';
 import * as Styled from './styled';
-import { subscribeToNewsletter } from 'api/api';
+import { checkTwitterUserNameAvailability } from 'api/api';
+import { Row, Col } from 'antd';
+import { toWei } from 'utils/units';
 
-import validator from 'validator';
-
-const isEmail = (twitterHandle: string) => {
-  return validator.isEmail(twitterHandle);
-};
+// const isEmail = (twitterHandle: string) => {
+//   return validator.isEmail(twitterHandle);
+// };
 
 interface State {
   twitterHandle: string;
@@ -18,7 +18,15 @@ interface State {
   badValidation: string | null;
 }
 
-export default class NewsletterForm extends React.PureComponent<any, State> {
+import { Form } from 'antd';
+
+function isNumeric(num) {
+  return !isNaN(num);
+}
+
+const FormItem = Form.Item;
+
+export default class SendForm extends React.PureComponent<any, State> {
   state: State = {
     twitterHandle: '',
     amount: '',
@@ -28,7 +36,7 @@ export default class NewsletterForm extends React.PureComponent<any, State> {
     badValidation: null
   };
 
-  private handleChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+  private handleChange = async (ev: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = ev.currentTarget;
 
     this.setState({
@@ -38,28 +46,73 @@ export default class NewsletterForm extends React.PureComponent<any, State> {
     } as any);
   };
 
-  handleSubmit = async (ev: React.FormEvent<HTMLFormElement>) => {
-    ev.preventDefault();
+  twitterValidation = async twitterHandle => {
+    let badValidation = null;
 
+    if (twitterHandle === '@') {
+      twitterHandle = this.state.twitterHandle[0].substring(1);
+    }
+
+    if (twitterHandle.includes('https://twitter.com/')) {
+      twitterHandle = twitterHandle.split('https://twitter.com/')[1];
+    }
+
+    if (twitterHandle === '') {
+      badValidation = 'Oops! This twitter handle is not valid';
+    } else {
+      // const twitterHandleAvailability = await checkTwitterUserNameAvailability(
+      //   twitterHandle
+      // );
+
+      if (false) {
+        // if (twitterHandleAvailability.data.reason !== 'taken') {
+        badValidation = 'Oops! This twitter handle does not exist';
+      }
+    }
+
+    return { badValidation, twitterHandle };
+  };
+
+  amountValidation = (amount: string) => {
+    let badAmountValidation = null;
+    let weiAmount = null;
+
+    if (!isNumeric(amount)) {
+      badAmountValidation = 'Amount is not a number';
+    } else {
+      weiAmount = toWei(amount, 'ether');
+    }
+
+    return { badAmountValidation, weiAmount };
+  };
+
+  handleSubmit = async (ev: any) => {
+    ev.preventDefault();
     if (this.state.isLoading || this.state.isSuccess) {
       return;
     }
-
     this.setState({ isLoading: true });
 
     let delay = 1000;
 
-    let badValidation: string | null = null;
+    let { badValidation, twitterHandle } = await this.twitterValidation(
+      this.state.twitterHandle
+    );
 
-    if (!isEmail(this.state.twitterHandle)) {
-      badValidation = 'Oops! This twitterHandle is invalid.';
-      delay = 500;
+    let { badAmountValidation, weiAmount } = this.amountValidation(
+      this.state.amount
+    );
+
+    // I'm so sorry.
+    if (!badValidation) {
+      badValidation = badAmountValidation;
     }
 
     if (!badValidation) {
       this.setState({ isLoading: true });
       try {
-        await subscribeToNewsletter(this.state.twitterHandle);
+        console.log('Run metamask', twitterHandle);
+        console.log('weiAmount', weiAmount);
       } catch (e) {
         /* tslint:disable-next-line:no-console */
         console.error(e);
@@ -93,9 +146,7 @@ export default class NewsletterForm extends React.PureComponent<any, State> {
     if (isLoading) {
       buttonText = (
         <Styled.ButtonIcon key="loading">
-          <Spin
-            indicator={<Icon spin type="loading" style={{ color: '#FFF' }} />}
-          />
+          <Spin indicator={<Icon spin type="loading" />} />
         </Styled.ButtonIcon>
       );
     } else if (isSuccess) {
@@ -112,7 +163,7 @@ export default class NewsletterForm extends React.PureComponent<any, State> {
       );
     }
 
-    let message = <span>Tip a twitter user!</span>;
+    let message = <span />;
     if (isSuccess) {
       message = (
         <Styled.SuccessMessage>
@@ -130,29 +181,32 @@ export default class NewsletterForm extends React.PureComponent<any, State> {
 
     return (
       <React.Fragment>
-        <Styled.Form onSubmit={this.handleSubmit}>
-          <Input
-            name="twitterHandle"
-            value={twitterHandle}
-            placeholder="@jack"
-            onChange={this.handleChange}
-          />
-          <br />
-          <Input
-            name="amount"
-            value={amount}
-            placeholder="satoshi@nakamoto.com"
-            onChange={this.handleChange}
-          />
-          <br />
-          <Button
-            isLoading={isLoading}
-            isSuccess={isSuccess}
-            isFailure={isFailure}
-          >
-            {buttonText}
-          </Button>
-        </Styled.Form>
+        <Form layout="vertical">
+          <Col span={8} offset={8}>
+            <FormItem label="Twitter Handle">
+              <Input
+                name="twitterHandle"
+                value={twitterHandle}
+                addonBefore={'@'}
+                placeholder="jack"
+                onChange={this.handleChange}
+              />{' '}
+            </FormItem>
+            <FormItem label="Amount">
+              <Input
+                name="amount"
+                value={amount}
+                placeholder="0.01"
+                addonAfter={'ETH'}
+                onChange={this.handleChange}
+              />{' '}
+            </FormItem>
+            <FormItem>
+              <Button onClick={this.handleSubmit}>{buttonText}</Button>{' '}
+            </FormItem>
+          </Col>
+        </Form>
+        <Row />
 
         <Styled.Message>{message}</Styled.Message>
       </React.Fragment>

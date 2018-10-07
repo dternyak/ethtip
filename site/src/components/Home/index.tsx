@@ -13,8 +13,7 @@ class Home extends React.Component<any, any> {
         <Styled.Container>
           <Styled.Background />
           <Styled.Title>ETHTip.io</Styled.Title>
-          <Styled.Tagline>Tip on twitter</Styled.Tagline>
-
+          <Styled.Tagline>Tip Ether on twitter</Styled.Tagline>
           <SendForm web3={web3} account={account} />
         </Styled.Container>
       </BasicHead>
