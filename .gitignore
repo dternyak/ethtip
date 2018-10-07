@@ -10,4 +10,4 @@ build
 out
 src/build
 yarn-error.log
-ormconfig.json
+web3/.env
